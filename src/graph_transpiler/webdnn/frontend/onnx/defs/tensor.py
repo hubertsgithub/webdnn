@@ -76,6 +76,7 @@ def _convert_split(converter: ONNXConverter, onnx_op: INodeProto):
 
 @ONNXConverter.register_handler("Slice")
 def _convert_slice(converter: ONNXConverter, onnx_op: INodeProto):
+    ### TODO Implement this.
     raise NotImplementedError("[ONNXConverter] Operator \"Slice\" is not supported yet.")
 
 
