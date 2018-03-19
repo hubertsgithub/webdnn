@@ -10,6 +10,7 @@ from webdnn.graph.operators.concat import Concat
 from webdnn.graph.operators.depth2space import Depth2Space
 from webdnn.graph.operators.reshape import Reshape
 from webdnn.graph.operators.space2depth import Space2Depth
+from webdnn.graph.operators.slice import Slice
 from webdnn.graph.operators.split_axis import SplitAxis
 from webdnn.graph.operators.tile import Tile
 from webdnn.graph.operators.transpose import Transpose
@@ -77,7 +78,37 @@ def _convert_split(converter: ONNXConverter, onnx_op: INodeProto):
 @ONNXConverter.register_handler("Slice")
 def _convert_slice(converter: ONNXConverter, onnx_op: INodeProto):
     ### TODO Implement this.
-    raise NotImplementedError("[ONNXConverter] Operator \"Slice\" is not supported yet.")
+
+    x = converter.get_variable(onnx_op.input[0])
+    attrs = attribute_dict(onnx_op)
+
+    print (attrs)
+
+    # Attrs:
+    # 'starts' --> starts.ints
+    # 'ends' --> ends.ints
+    # 'axes' --> axes.ints
+    # https://mil-tokyo.github.io/webdnn/docs/_modules/webdnn/graph/operators/slice.html
+
+    # Slice(name, AxisKeyDict: indices)
+    # eg. multiplier = AxisKeyDict(x.order.axes, [pad_begin if a == axis else x.shape_dict[a] for a in x.order.axes])
+
+    # TODO: Construct AxisKeyDict of indices
+    # Set name for Slice layer if possible?
+    # Should work like this. I hope.
+
+    indices = AxisKeyDict(x.order.axes, [slice(s,t) for s,t in zip(attrs["starts"].ints, attrs["ends"].ints)])
+
+    #indices = AxisKeyDict(attrs["axes"].ints, [slice(s,t) for s,t in zip(attrs["starts"].ints, attrs["ends"].ints)])
+
+    print (x.order.axes)
+    print (attrs["axes"].ints)
+
+    y, = Slice(None, indices)(x)
+
+    converter.set_variable(onnx_op.output[0], y)
+
+    #raise NotImplementedError("[ONNXConverter] Operator \"Slice\" is not supported yet.")
 
 
 @ONNXConverter.register_handler("Transpose")
