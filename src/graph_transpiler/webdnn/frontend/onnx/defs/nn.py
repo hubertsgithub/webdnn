@@ -24,7 +24,7 @@ def _convert_average_pool(converter: ONNXConverter, onnx_op: INodeProto):
     if "dilations" in attrs.keys():
         dilations = list(attrs["dilations"].ints)
     else:
-        print("\ndilations attribute not found for \n{}\n Setting to [1].".format(onnx_op))
+        #print("\ndilations attribute not found for \n{}\n Setting to [1].".format(onnx_op))
         dilations = [1]
     if any(d != 1 for d in dilations):
         raise NotImplementedError("[ONNXConverter] AveragePool is supported only when dilations are 1.")
@@ -57,7 +57,7 @@ def _convert_max_pool(converter: ONNXConverter, onnx_op: INodeProto):
     if "dilations" in attrs.keys():
         dilations = list(attrs["dilations"].ints)
     else:
-        print("\ndilations attribute not found for \n{}\n Setting to [1].".format(onnx_op))
+        #print("\ndilations attribute not found for \n{}\n Setting to [1].".format(onnx_op))
         dilations = [1]
     if any(d != 1 for d in dilations):
         raise NotImplementedError("[ONNXConverter] MaxPool is supported only when dilations are 1.")
@@ -95,7 +95,7 @@ def _convert_conv(converter: ONNXConverter, onnx_op: INodeProto):
     elif "dilation" in attrs.keys():
         dilations = list(attrs["dilation"].ints)
     else:
-        print("\ndilations attribute not found for \n{}\n Setting to [1, 1].".format(onnx_op))
+        #print("\ndilations attribute not found for \n{}\n Setting to [1, 1].".format(onnx_op))
         dilations = [1, 1]
     stride = list(attrs["strides"].ints)
 
@@ -158,6 +158,12 @@ def _convert_global_max_pool(converter: ONNXConverter, onnx_op: INodeProto):
 @ONNXConverter.register_handler("BatchNormalization")
 def _convert_batch_normalization(converter: ONNXConverter, onnx_op: INodeProto):
     ### TODO
+
+    ## Just pass through without any operation
+    #x = converter.get_variable(onnx_op.input[0])
+    #y = x
+
+    #converter.set_variable(onnx_op.output[0], y)
 
     # FIXME: It's possible to support in current version of webdnn
     raise NotImplementedError("[ONNXConverter] Operator \"BatchNormalization\" is not supported yet.")
